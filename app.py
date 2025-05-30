@@ -27,24 +27,38 @@ if st.button("Analyze Text"):
             with tracing_v2_enabled():
                 with st.spinner("Analyzing..."):
                     task = plan_task(user_input, api_key).lstrip("- ").strip()
-                    st.write(f"🧠 Detected task: {task}")  
-                    result = agent_map.get(task)
-                    if result:
-                        output = result(user_input, api_key)
+                    st.write(f"🧠 Detected task: {task}")
+
+                    response = requests.post(
+                        f"http://127.0.0.1:8000/{task}",
+                        json={"query": user_input, "api_key": api_key}
+                    )
+                    if response.status_code == 200:
+                        output = response.json().get("result", "")
                         st.success("Done!")
                         st.subheader(f"Task: {task.capitalize()}")
                         st.markdown(output)
                     else:
-                        st.error(f"Unsupported task: {task}")
+                        st.error(f"Task failed: {response.text}")
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
-# result = agent_map.get(task)
-# if result:
-#     output = result(user_input, api_key)
-#     st.success("Done!")
-#     st.subheader(f"Task: {task.capitalize()}")
-#     st.markdown(output)
+
+# if task in agent_map:
+#     try:
+#         response = requests.post(
+#             f"http://127.0.0.1:8000/{task}",
+#             json={"query": user_input, "api_key": api_key}
+#         )
+#         if response.status_code == 200:
+#             output = response.json().get("result", "")
+#             st.success("Done!")
+#             st.subheader(f"Task: {task.capitalize()}")
+#             st.markdown(output)
+#         else:
+#             st.error(f"Task failed: {response.text}")
+#     except Exception as e:
+#         st.error(f"Could not connect to MCP server: {e}")
 # else:
 #     st.error(f"Unsupported task: {task}")
 
