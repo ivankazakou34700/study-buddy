@@ -40,7 +40,11 @@ Create a .env file with your keys
 OPENAI_API_KEY=your_openai_key_here  
 LANGSMITH_API_KEY=your_langsmith_key_here
 
-5. Run the app
+5. Run the MCP Server
+uvicorn mcp_server:app --reload
+
+
+6. Run the app
 
 streamlit run app.py
 
