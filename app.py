@@ -27,30 +27,50 @@ if st.button("Analyze Text"):
             with tracing_v2_enabled():
                 with st.spinner("Analyzing..."):
                     task = plan_task(user_input, api_key).lstrip("- ").strip()
-                    st.write(f"🧠 Detected task: {task}")  # Debug print
-
-                    if task == "lookup":
-                        response = requests.get("http://localhost:8000/wikipedia", params={"query": user_input})
-                        if response.status_code == 200:
-                            data = response.json()
-                            summary = data.get("summary", "No summary available.")
-                            url = data.get("url", "#")
-                            st.success("Wikipedia summary fetched successfully!")
-                            st.subheader(f"Task: {task.capitalize()}")
-                            st.markdown(f"**[{data['title']}]({url})**")
-                            st.write(summary)
-                        else:
-                            st.error(f"Wikipedia tool error: {response.json().get('error')}")
-                    elif task in agent_map:
-                        result = agent_map[task](user_input, api_key)
+                    st.write(f"🧠 Detected task: {task}")  
+                    result = agent_map.get(task)
+                    if result:
+                        output = result(user_input, api_key)
                         st.success("Done!")
                         st.subheader(f"Task: {task.capitalize()}")
-                        st.write(result)
+                        st.markdown(output)
                     else:
                         st.error(f"Unsupported task: {task}")
-
         except Exception as e:
             st.error(f"Something went wrong: {e}")
+
+result = agent_map.get(task)
+if result:
+    output = result(user_input, api_key)
+    st.success("Done!")
+    st.subheader(f"Task: {task.capitalize()}")
+    st.markdown(output)
+else:
+    st.error(f"Unsupported task: {task}")
+
+
+                    # if task == "lookup":
+                    #     response = requests.get("http://localhost:8000/wikipedia", params={"query": user_input})
+                    #     if response.status_code == 200:
+                    #         data = response.json()
+                    #         summary = data.get("summary", "No summary available.")
+                    #         url = data.get("url", "#")
+                    #         st.success("Wikipedia summary fetched successfully!")
+                    #         st.subheader(f"Task: {task.capitalize()}")
+                    #         st.markdown(f"**[{data['title']}]({url})**")
+                    #         st.write(summary)
+                    #     else:
+                    #         st.error(f"Wikipedia tool error: {response.json().get('error')}")
+                    # elif task in agent_map:
+                    #     result = agent_map[task](user_input, api_key)
+                    #     st.success("Done!")
+                    #     st.subheader(f"Task: {task.capitalize()}")
+                    #     st.write(result)
+                    # else:
+                    #     st.error(f"Unsupported task: {task}")
+
+        # except Exception as e:
+        #     st.error(f"Something went wrong: {e}")
 
 if uploaded_file is not None:
     pdf_text = extract_text_from_pdf(uploaded_file)

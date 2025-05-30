@@ -1,5 +1,5 @@
 import requests
-
+import wikipedia
 from openai import OpenAI
 
 PLAN_PROMPT = """
@@ -83,17 +83,14 @@ def run_comparator(query, api_key):
 
 def run_lookup(query, api_key=None):
     try:
-        response = requests.get("http://localhost:8000/wikipedia", params={"query": query})
-        if response.status_code == 200:
-            data = response.json()
-            summary = data.get("summary", "No summary available.")
-            title = data.get("title", "Wikipedia Page")
-            url = data.get("url", "#")
-            return f"### [{title}]({url})\n\n{summary}"
-        else:
-            return f"Wikipedia error: {response.json().get('error', 'Unknown error')}"
+        page = wikipedia.page(query)
+        return f"### [{page.title}]({page.url})\n\n{page.summary[:1000]}..."
+    except wikipedia.exceptions.DisambiguationError as e:
+        return f"Disambiguation error. Try one of these: {e.options[:5]}"
+    except wikipedia.exceptions.PageError:
+        return "No matching Wikipedia page found."
     except Exception as e:
-        return f"Failed to fetch from Wikipedia tool: {e}"
+        return f"Error: {str(e)}"
 
 def run_quizzer(query, api_key):
     ensure_client(api_key)
