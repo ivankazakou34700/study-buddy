@@ -1,4 +1,3 @@
-import requests
 import wikipedia
 from openai import OpenAI
 
@@ -38,12 +37,6 @@ def plan_task(query, api_key):
 
     return task_raw
 
-
-    for prefix in ["task:", "-", "–", "*"]:
-        if task_raw.startswith(prefix):
-            task_raw = task_raw[len(prefix):].strip()
-
-    return task_raw
 
 def run_summarizer(query, api_key):
     ensure_client(api_key)

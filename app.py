@@ -39,14 +39,14 @@ if st.button("Analyze Text"):
         except Exception as e:
             st.error(f"Something went wrong: {e}")
 
-result = agent_map.get(task)
-if result:
-    output = result(user_input, api_key)
-    st.success("Done!")
-    st.subheader(f"Task: {task.capitalize()}")
-    st.markdown(output)
-else:
-    st.error(f"Unsupported task: {task}")
+# result = agent_map.get(task)
+# if result:
+#     output = result(user_input, api_key)
+#     st.success("Done!")
+#     st.subheader(f"Task: {task.capitalize()}")
+#     st.markdown(output)
+# else:
+#     st.error(f"Unsupported task: {task}")
 
 
                     # if task == "lookup":
